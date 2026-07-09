@@ -6,7 +6,6 @@ The e-commerce platform is designed to support millions of users, products, and 
 
 The primary entities are Users, Products, Orders, Cart, Inventory, and Order Items. The schema is normalized to reduce redundancy while selectively denormalizing a few fields to optimize read performance.
 
----
 
 # Core Entities
 
@@ -22,7 +21,6 @@ Stores customer information.
 | phone | Contact number |
 | created_at | Registration timestamp |
 
----
 
 ## Products
 
@@ -37,7 +35,6 @@ Stores all products available for purchase.
 | price | Current selling price |
 | created_at | Product creation timestamp |
 
----
 
 ## Inventory
 
@@ -53,7 +50,6 @@ Tracks stock availability.
 
 Inventory is maintained separately because stock levels change frequently while product details change infrequently.
 
----
 
 ## Cart
 
@@ -65,7 +61,6 @@ Represents a user's shopping cart.
 | user_id (FK) | Cart owner |
 | created_at | Creation timestamp |
 
----
 
 ## Cart Items
 
@@ -79,7 +74,6 @@ Stores products added to a cart.
 
 A cart can contain multiple products, and a product can appear in many carts.
 
----
 
 ## Orders
 
@@ -92,8 +86,6 @@ Stores completed purchases.
 | order_status | Pending, Shipped, Delivered |
 | total_amount | Total order value |
 | created_at | Order timestamp |
-
----
 
 ## Order Items
 
@@ -109,8 +101,6 @@ Stores products purchased in an order.
 
 The product price is stored separately because product prices may change after the order is placed.
 
----
-
 # Relationships
 
 - One User can have one active Cart.
@@ -120,8 +110,6 @@ The product price is stored separately because product prices may change after t
 - One Product can appear in multiple Cart Items.
 - One Product can appear in multiple Order Items.
 - One Product has one Inventory record per warehouse.
-
----
 
 # ER Diagram
 
@@ -188,8 +176,6 @@ erDiagram
     PRODUCTS ||--|| INVENTORY : has
 ```
 
----
-
 # Indexing Strategy
 
 To improve query performance, the following indexes are created.
@@ -202,8 +188,6 @@ To improve query performance, the following indexes are created.
 Reason:
 Authentication and profile lookup are frequent operations.
 
----
-
 ### Products
 
 - Primary Key on `product_id`
@@ -213,16 +197,12 @@ Authentication and profile lookup are frequent operations.
 Reason:
 Product search and filtering are common.
 
----
-
 ### Inventory
 
 - Index on `product_id`
 
 Reason:
 Inventory lookup occurs during checkout.
-
----
 
 ### Orders
 
@@ -233,8 +213,6 @@ Inventory lookup occurs during checkout.
 Reason:
 Users frequently view recent orders.
 
----
-
 ### Order Items
 
 - Index on `order_id`
@@ -243,16 +221,12 @@ Users frequently view recent orders.
 Reason:
 Fast retrieval of products within an order.
 
----
-
 ### Cart Items
 
 - Composite Index `(cart_id, product_id)`
 
 Reason:
 Quick retrieval and updates while users modify their carts.
-
----
 
 # Denormalization Decision
 
@@ -297,8 +271,6 @@ Trade-off:
 - Product price updates do not affect historical records.
 
 This trade-off is acceptable because order history should remain immutable after purchase.
-
----
 
 # Conclusion
 
