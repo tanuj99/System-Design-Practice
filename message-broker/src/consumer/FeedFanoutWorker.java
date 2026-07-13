@@ -26,4 +26,9 @@ public class FeedFanoutWorker implements EventConsumer {
         }
         System.out.println("[Feed Worker] Feed cache updated for post : " + postEvent.getPostId());
     }
+
+    @Override
+    public String getConsumerName() {
+        return "Feed Worker";
+    }
 }

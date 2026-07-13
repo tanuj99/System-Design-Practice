@@ -29,4 +29,9 @@ public class NotificationWorker implements EventConsumer {
 
         System.out.println("[Notification Worker] Notification Logged");
     }
+    
+    @Override
+    public String getConsumerName() {
+        return "Notification Worker";
+    }
 }

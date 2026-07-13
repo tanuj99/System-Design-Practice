@@ -12,10 +12,13 @@ public class App {
 
         broker.subscribe(EventType.POST_CREATED, new NotificationWorker());
 
-        PostCreatedEvent event = new PostCreatedEvent(
-                "P101",
-                "User1",
-                "Hello World");
-        broker.publish(event);
+        for (int i = 1; i <= 10; i++) {
+            broker.publish(new PostCreatedEvent(
+                    "P" + i,
+                    "User1",
+                    "Hello"));
+        }
+        Thread.sleep(3000);
+        broker.shutdown();
     }
 }
