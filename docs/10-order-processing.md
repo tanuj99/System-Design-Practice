@@ -1,4 +1,3 @@
-````markdown
 # Order Processing System for E-commerce
 
 ## Overview
@@ -60,15 +59,8 @@ These include:
 
 Flow:
 
-```text
-Order Service
-      |
-Publish OrderCreated Event
-      |
-Kafka
- |      |       |        |
-Email Analytics Search Shipping
-```
+<img width="744" height="331" alt="image" src="https://github.com/user-attachments/assets/87346770-afdb-41fb-9294-e1f51ed6e2cf" />
+
 
 This significantly reduces user response time because the Order Service does not wait for these tasks to complete.
 
@@ -336,4 +328,3 @@ This ensures that no confirmed orders are lost even during service outages.
 # Conclusion
 
 The proposed architecture combines synchronous processing for business-critical operations with asynchronous event-driven communication for downstream workflows. Apache Kafka serves as the central event backbone, enabling scalable and reliable communication between services. Exactly-once delivery guarantees are applied to payment processing, while inventory updates use at-least-once semantics with idempotent consumers. Automatic retries, dead-letter queues, and backpressure mechanisms ensure resilience during failures and high-traffic events. This architecture provides the scalability, reliability, and fault tolerance required to process millions of orders while maintaining a responsive user experience.
-````
