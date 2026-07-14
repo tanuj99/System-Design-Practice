@@ -9,6 +9,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import broker.repository.EventDedupRepository;
+
 public class EventBroker {
 
     private final Map<EventType, List<EventConsumer>> subscribers = new HashMap<>();
@@ -22,6 +24,10 @@ public class EventBroker {
      * Worker Threads
      */
     private final ExecutorService workers = Executors.newFixedThreadPool(4);
+
+    private final DeadLetterQueue dlq = new DeadLetterQueue();
+
+    private final EventDedupRepository dedupRepository = new EventDedupRepository();
 
     public EventBroker() {
 
@@ -69,8 +75,17 @@ public class EventBroker {
     private void process(EventTask task) {
         try {
             task.consumer.consume(task.event);
-        } catch (Exception e) {
-            System.out.println("Consumer " + task.consumer.getConsumerName() + " failed.");
+            if (!dedupRepository.markProcessed(task.event.getEventId())) {
+                System.out.println("Duplicate Event Ignored : " + task.event.getEventId());
+            }
+        } catch (Exception ex) {
+            task.retryCount++;
+            System.out.println(task.consumer.getConsumerName() + " Retry " + task.retryCount);
+            if (task.retryCount >= 3) {
+                dlq.add(task.event);
+                return;
+            }
+            queue.offer(task);
         }
     }
 
@@ -84,13 +99,14 @@ public class EventBroker {
 
     private static class EventTask {
 
-        private final Event event;
+        Event event;
+        EventConsumer consumer;
+        int retryCount;
 
-        private final EventConsumer consumer;
-
-        public EventTask(Event event, EventConsumer consumer) {
+        EventTask(Event event, EventConsumer consumer) {
             this.event = event;
             this.consumer = consumer;
+            this.retryCount = 0;
         }
     }
 }

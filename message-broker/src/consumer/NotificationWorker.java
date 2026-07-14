@@ -21,9 +21,7 @@ public class NotificationWorker implements EventConsumer {
 
         PostCreatedEvent postEvent = (PostCreatedEvent) event;
 
-        try (PrintWriter writer = new PrintWriter(
-                new FileWriter(FILE, true))) {
-
+        try (PrintWriter writer = new PrintWriter(new FileWriter(FILE, true))) {
             writer.println("Notify Followers : " + postEvent.getUserId() + " created post " + postEvent.getPostId());
         }
 
